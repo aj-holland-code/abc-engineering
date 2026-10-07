@@ -93,10 +93,9 @@ public class SupplierController {
      * Reactivates a supplier.
      *
      * @param supplierId the ID of the supplier to be reactivated
-     * @return {@code true} if the supplier is successfully reactivated
      */
     @PatchMapping("/{id}")
-    public boolean reactivateSupplier(@PathVariable("id") Integer supplierId) {
-        return supplierService.reactivateSupplier(supplierId);
+    public void reactivateSupplier(@PathVariable("id") Integer supplierId) {
+        supplierService.reactivateSupplier(supplierId);
     }
 }

@@ -23,6 +23,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -275,8 +277,8 @@ public class SupplierControllerTest {
                     """;
 
             mockMvc.perform(post(getURI)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonRequestBody))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(jsonRequestBody))
                     .andExpect(status().isBadRequest());
 
             verify(supplierService, never())
@@ -415,7 +417,7 @@ public class SupplierControllerTest {
             mockMvc.perform(put(uri, supplierId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(jsonRequestBody))
-                            .andExpect(status().isBadRequest());
+                    .andExpect(status().isBadRequest());
 
             verify(supplierService, never())
                     .updateSupplier(eq(supplierId), any(UpdateSupplierRequest.class));
@@ -506,8 +508,9 @@ public class SupplierControllerTest {
             final Integer supplierId = 26;
             final String expectedExceptionMessage = "Supplier not found with id: " + supplierId;
 
-            when(supplierService.reactivateSupplier(supplierId))
-                    .thenThrow(new SupplierNotFoundException(supplierId));
+            // Do Throw test now method has void return type.
+            doThrow(new SupplierNotFoundException(supplierId))
+                    .when(supplierService).reactivateSupplier(supplierId);
 
             mockMvc.perform(patch(uri, supplierId))
                     .andExpect(status().isNotFound())
@@ -522,12 +525,11 @@ public class SupplierControllerTest {
         void reactivateSupplierWhereSupplierFound() throws Exception {
             final Integer supplierId = 31;
 
-            when(supplierService.reactivateSupplier(supplierId))
-                    .thenReturn(true);
+            // Do Nothing test now method has void return type.
+            doNothing().when(supplierService).reactivateSupplier(supplierId);
 
             mockMvc.perform(patch(uri, supplierId))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("true"));
+                    .andExpect(status().isOk());
 
             verify(supplierService).reactivateSupplier(supplierId);
         }

@@ -119,16 +119,13 @@ public class SupplierService {
      * Reactivates a supplier.
      *
      * @param supplierId the ID of the supplier to be deactivated
-     * @return {@code true} if the supplier has been successfully reactivated;
      * @throws SupplierNotFoundException if no supplier exists with the supplied ID
      */
-    public boolean reactivateSupplier(Integer supplierId) {
+    public void reactivateSupplier(Integer supplierId) {
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(() -> new SupplierNotFoundException(supplierId));
 
         supplier.setActive(true);
         supplierRepository.save(supplier);
-
-        return true;
     }
 }
