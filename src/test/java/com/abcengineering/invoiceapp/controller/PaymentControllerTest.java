@@ -67,7 +67,7 @@ public class PaymentControllerTest {
 
             final String expectedExceptionMessage = "Payment not found with id: " + paymentId;
 
-            when(paymentService.viewPayment(paymentId))
+            when(paymentService.getPayment(paymentId))
                     .thenThrow(new PaymentNotFoundException(paymentId));
 
             mockMvc.perform(get(GET_URI, paymentId))
@@ -92,7 +92,7 @@ public class PaymentControllerTest {
                     paymentDate, paymentAmount, paymentMethod, paymentReference);
             expectedPayment.setId(paymentId);
 
-            when(paymentService.viewPayment(paymentId))
+            when(paymentService.getPayment(paymentId))
                     .thenReturn(expectedPayment);
 
             mockMvc.perform(get(GET_URI, paymentId))

@@ -45,7 +45,7 @@ public class PaymentController {
     @GetMapping("/api/payments/{id}")
     public Payment getPayment(@PathVariable("id") Integer paymentId) {
 
-        return paymentService.viewPayment(paymentId);
+        return paymentService.getPayment(paymentId);
     }
 
     /**

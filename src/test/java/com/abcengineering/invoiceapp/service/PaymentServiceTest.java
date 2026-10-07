@@ -63,7 +63,7 @@ public class PaymentServiceTest {
                     .thenReturn(Optional.empty());
 
             assertThrows(PaymentNotFoundException.class,
-                    () -> paymentService.viewPayment(paymentId));
+                    () -> paymentService.getPayment(paymentId));
         }
 
 
@@ -84,7 +84,7 @@ public class PaymentServiceTest {
             when(paymentRepository.findById(paymentId))
                     .thenReturn(Optional.of(payment));
 
-            Payment actualPayment = paymentService.viewPayment(paymentId);
+            Payment actualPayment = paymentService.getPayment(paymentId);
 
             assertSame(payment, actualPayment);
             assertEquals(paymentId, actualPayment.getId());

@@ -146,12 +146,13 @@ public class InvoiceService {
      * Cancel an invoice.
      *
      * @param invoiceId the ID of the invoice to cancel
-     * @param cancelRequest the cancellation details
+     * @param cancellationRequest the cancellation details
      * @return {@code true} if the invoice successfully cancelled in this operation;
      *         {@code false} if the invoice was already cancelled
      * @throws InvoiceNotFoundException if no invoice exists with the supplied ID
      */
-    public boolean cancelInvoice(Integer invoiceId, CancelInvoiceRequest cancelRequest) {
+    public boolean cancelInvoice(Integer invoiceId,
+                                 CancelInvoiceRequest cancellationRequest) {
         // Get existing invoice details.
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new InvoiceNotFoundException(invoiceId));
@@ -162,7 +163,7 @@ public class InvoiceService {
         }
 
         invoice.setCancelledAt(LocalDateTime.now());
-        invoice.setCancellationReason(cancelRequest.getCancellationReason());
+        invoice.setCancellationReason(cancellationRequest.getCancellationReason());
         invoiceRepository.save(invoice);
 
         return true;

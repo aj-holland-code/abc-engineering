@@ -30,13 +30,13 @@ public class SupplierController {
     /**
      * Creates a supplier.
      *
-     * @param createRequest the details of the supplier to create
+     * @param supplierRequest the details of the supplier to create
      * @return the created supplier
      */
     @PostMapping
     public Supplier createSupplier(
-           @Valid @RequestBody CreateSupplierRequest createRequest) {
-        return supplierService.createSupplier(createRequest);
+           @Valid @RequestBody CreateSupplierRequest supplierRequest) {
+        return supplierService.createSupplier(supplierRequest);
     }
 
 

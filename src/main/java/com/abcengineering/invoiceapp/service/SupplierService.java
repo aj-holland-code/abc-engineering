@@ -28,22 +28,22 @@ public class SupplierService {
     /**
      * Create a supplier.
      *
-     * @param request the details of supplier to be created
+     * @param supplierRequest the details of supplier to be created
      * @return the created {@link Supplier} entity
      */
-    public Supplier createSupplier(CreateSupplierRequest request) {
-        Supplier supplier = new Supplier(request.getCompanyName(), request.getCompanyAddress());
+    public Supplier createSupplier(CreateSupplierRequest supplierRequest) {
+        Supplier supplier = new Supplier(supplierRequest.getCompanyName(), supplierRequest.getCompanyAddress());
 
-        if (request.getContactName() != null) {
-            supplier.setContactName(request.getContactName());
+        if (supplierRequest.getContactName() != null) {
+            supplier.setContactName(supplierRequest.getContactName());
         }
 
-        if (request.getContactEmail() != null) {
-            supplier.setContactEmail(request.getContactEmail());
+        if (supplierRequest.getContactEmail() != null) {
+            supplier.setContactEmail(supplierRequest.getContactEmail());
         }
 
-        if (request.getContactTelephone() != null) {
-            supplier.setContactTelephone(request.getContactTelephone());
+        if (supplierRequest.getContactTelephone() != null) {
+            supplier.setContactTelephone(supplierRequest.getContactTelephone());
         }
 
         supplier.setActive(true);
@@ -77,17 +77,18 @@ public class SupplierService {
      * Updates supplier's details.
      *
      * @param supplierId the ID of the supplier to update
+     * @param updateRequest the updated details for the supplier
      * @return the updated {@link Supplier} entity associated with the supplied ID
      */
-    public Supplier updateSupplier(Integer supplierId, UpdateSupplierRequest request) {
+    public Supplier updateSupplier(Integer supplierId, UpdateSupplierRequest updateRequest) {
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(() -> new SupplierNotFoundException(supplierId));
 
-        supplier.setCompanyName(request.getCompanyName());
-        supplier.setCompanyAddress(request.getCompanyAddress());
-        supplier.setContactName(request.getContactName());
-        supplier.setContactEmail(request.getContactEmail());
-        supplier.setContactTelephone(request.getContactTelephone());
+        supplier.setCompanyName(updateRequest.getCompanyName());
+        supplier.setCompanyAddress(updateRequest.getCompanyAddress());
+        supplier.setContactName(updateRequest.getContactName());
+        supplier.setContactEmail(updateRequest.getContactEmail());
+        supplier.setContactTelephone(updateRequest.getContactTelephone());
         return supplierRepository.save(supplier);
     }
 

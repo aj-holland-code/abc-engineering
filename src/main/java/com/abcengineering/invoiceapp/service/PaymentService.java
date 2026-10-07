@@ -56,7 +56,7 @@ public class PaymentService {
      * @return the {@link Payment} entity associated with the payment ID
      * @throws PaymentNotFoundException if no payment exists with the supplied ID
      */
-    public Payment viewPayment(Integer paymentId) {
+    public Payment getPayment(Integer paymentId) {
 
         return paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new PaymentNotFoundException(paymentId));
