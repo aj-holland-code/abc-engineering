@@ -68,7 +68,7 @@ public class InvoiceController {
 
 
     /**
-     * Updates a invoice.
+     * Updates an invoice.
      *
      * @return the updated invoice details.
      */
