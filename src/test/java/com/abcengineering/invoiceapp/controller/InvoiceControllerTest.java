@@ -62,7 +62,7 @@ public class InvoiceControllerTest {
         @DisplayName("getInvoice returns 404 when invoice not found")
         void getInvoiceWhereInvoiceNotFound() throws Exception {
             final Integer invoiceId = 129;
-            final String expectedExceptionMessage = "Invoice not found with id: " + invoiceId;
+            final String expectedExceptionMessage = "Invoice not found with ID: " + invoiceId;
 
             when(invoiceService.getInvoice(invoiceId))
                     .thenThrow(new InvoiceNotFoundException(invoiceId));
@@ -249,7 +249,7 @@ public class InvoiceControllerTest {
         void createInvoiceWhereSupplierNotFound() throws Exception {
 
             final Integer supplierId = 14;
-            final String expectedExceptionMessage = "Supplier not found with id: " + supplierId;
+            final String expectedExceptionMessage = "Supplier not found with ID: " + supplierId;
 
             CreateInvoiceRequest request = new CreateInvoiceRequest();
             request.setSupplierId(supplierId);
@@ -322,7 +322,7 @@ public class InvoiceControllerTest {
         @DisplayName("updateInvoice returns 404 when invoice not found")
         void updateInvoiceWhereInvoiceNotFound() throws Exception {
             final Integer invoiceId = 129;
-            final String expectedExceptionMessage = "Invoice not found with id: " + invoiceId;
+            final String expectedExceptionMessage = "Invoice not found with ID: " + invoiceId;
 
             UpdateInvoiceRequest request = new UpdateInvoiceRequest();
             request.setSupplierInvoiceRef("ABC-110");
@@ -409,7 +409,7 @@ public class InvoiceControllerTest {
         @DisplayName("cancelInvoice returns 404 when invoice not found")
         void cancelInvoiceWhereInvoiceNotFound() throws Exception {
             final Integer invoiceId = 129;
-            final String expectedExceptionMessage = "Invoice not found with id: " + invoiceId;
+            final String expectedExceptionMessage = "Invoice not found with ID: " + invoiceId;
             final String cancellationReason = "Incorrect product sent";
 
             CancelInvoiceRequest request = new CancelInvoiceRequest();

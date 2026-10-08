@@ -2,11 +2,11 @@ package com.abcengineering.invoiceapp.service;
 
 import com.abcengineering.invoiceapp.dto.CreateSupplierRequest;
 import com.abcengineering.invoiceapp.dto.UpdateSupplierRequest;
-import com.abcengineering.invoiceapp.exception.InvoiceNotFoundException;
 import com.abcengineering.invoiceapp.exception.SupplierNotFoundException;
-import com.abcengineering.invoiceapp.model.Invoice;
 import com.abcengineering.invoiceapp.model.Supplier;
 import com.abcengineering.invoiceapp.repository.SupplierRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +16,9 @@ public class SupplierService {
 
     private final SupplierRepository supplierRepository;
     private final InvoiceService invoiceService;
+
+    private static final Logger logger
+            = LoggerFactory.getLogger(SupplierService.class);
 
 
     public SupplierService(SupplierRepository supplierRepository, InvoiceService invoiceService) {
@@ -32,6 +35,8 @@ public class SupplierService {
      * @return the created {@link Supplier} entity
      */
     public Supplier createSupplier(CreateSupplierRequest supplierRequest) {
+        logger.info("Creating supplier '{}'", supplierRequest.getCompanyName());
+
         Supplier supplier = new Supplier(supplierRequest.getCompanyName(), supplierRequest.getCompanyAddress());
 
         if (supplierRequest.getContactName() != null) {
@@ -47,7 +52,10 @@ public class SupplierService {
         }
 
         supplier.setActive(true);
-        return supplierRepository.save(supplier);
+        Supplier savedSupplier = supplierRepository.save(supplier);
+
+        logger.info("Supplier successfully created with ID {}", savedSupplier.getId());
+        return savedSupplier;
     }
 
 
@@ -84,12 +92,17 @@ public class SupplierService {
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(() -> new SupplierNotFoundException(supplierId));
 
+        logger.info("Updating supplier {}", supplierId);
+
         supplier.setCompanyName(updateRequest.getCompanyName());
         supplier.setCompanyAddress(updateRequest.getCompanyAddress());
         supplier.setContactName(updateRequest.getContactName());
         supplier.setContactEmail(updateRequest.getContactEmail());
         supplier.setContactTelephone(updateRequest.getContactTelephone());
-        return supplierRepository.save(supplier);
+        Supplier updatedSupplier = supplierRepository.save(supplier);
+
+        logger.info("Supplier {} updated successfully", supplierId);
+        return updatedSupplier;
     }
 
 
@@ -105,14 +118,17 @@ public class SupplierService {
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(() -> new SupplierNotFoundException(supplierId));
 
+        logger.info("Attempting to deactivate supplier {}", supplierId);
+
         // A supplier cannot be deactivated while they have outstanding invoices
         if (invoiceService.supplierHasOutstandingInvoices(supplierId)) {
+            logger.warn("Supplier {} cannot be deactivated due to outstanding invoices", supplierId);
             return false;
         }
 
         supplier.setActive(false);
         supplierRepository.save(supplier);
-
+        logger.info("Supplier {} successfully deactivated", supplierId);
         return true;
     }
 
@@ -126,7 +142,10 @@ public class SupplierService {
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(() -> new SupplierNotFoundException(supplierId));
 
+        logger.info("Attempting to reactivate supplier {}", supplierId);
+
         supplier.setActive(true);
         supplierRepository.save(supplier);
+        logger.info("Supplier {} successfully reactivated", supplierId);
     }
 }

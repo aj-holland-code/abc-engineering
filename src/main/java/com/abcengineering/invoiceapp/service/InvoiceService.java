@@ -10,6 +10,8 @@ import com.abcengineering.invoiceapp.model.Payment;
 import com.abcengineering.invoiceapp.model.Supplier;
 import com.abcengineering.invoiceapp.repository.InvoiceRepository;
 import com.abcengineering.invoiceapp.repository.SupplierRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,6 +24,9 @@ public class InvoiceService {
     private final PaymentService paymentService;
     private final InvoiceRepository invoiceRepository;
     private final SupplierRepository supplierRepository;
+
+    private static final Logger logger
+            = LoggerFactory.getLogger(InvoiceService.class);
 
     public InvoiceService(PaymentService paymentService, InvoiceRepository invoiceRepository,
         SupplierRepository supplierRepository) {
@@ -43,12 +48,17 @@ public class InvoiceService {
         Supplier supplier = supplierRepository.findById(invoiceRequest.getSupplierId())
                 .orElseThrow(() -> new SupplierNotFoundException(invoiceRequest.getSupplierId()));
 
+        logger.info("Creating invoice for supplier {}", supplier.getId());
+
         // Use it create the Invoice
         Invoice invoice = new Invoice(supplier, invoiceRequest.getSupplierInvoiceRef(),
                 invoiceRequest.getInvoiceDate(), invoiceRequest.getDueDate(),
                 invoiceRequest.getInvoiceAmount());
 
-        return invoiceRepository.save(invoice);
+        Invoice createdInvoice = invoiceRepository.save(invoice);
+
+        logger.info("Invoice successfully created with ID {}", createdInvoice.getId());
+        return createdInvoice;
     }
 
 
@@ -99,6 +109,7 @@ public class InvoiceService {
         List<Invoice> nonCancelledInvoices = getNonCancelledInvoicesForSupplier(supplierId);
 
         if (nonCancelledInvoices.isEmpty()) {
+            logger.debug("Supplier {} has no outstanding invoices", supplierId);
             return false;
         }
 
@@ -114,10 +125,12 @@ public class InvoiceService {
             // there is at least one outstanding invoice, so
             // there's no need to continue processing the others.
             if (totalPaidForInvoice.compareTo(invoice.getInvoiceAmount()) < 0) {
+                logger.debug("Supplier {} has outstanding invoices", supplierId);
                 return true;
             }
         }
 
+        logger.debug("Supplier {} has no outstanding invoices", supplierId);
         return false;
     }
 
@@ -134,13 +147,19 @@ public class InvoiceService {
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new InvoiceNotFoundException(invoiceId));
 
+        logger.info("Updating invoice {}", invoiceId);
+
         invoice.setSupplierInvoiceRef( updateRequest.getSupplierInvoiceRef());
         invoice.setInvoiceDate( updateRequest.getInvoiceDate());
         invoice.setDueDate( updateRequest.getDueDate());
         invoice.setInvoiceAmount(updateRequest.getInvoiceAmount());
 
-        return invoiceRepository.save(invoice);
+        Invoice updatedInvoice = invoiceRepository.save(invoice);
+
+        logger.info("Invoice {} successfully updated", invoiceId);
+        return updatedInvoice;
     }
+
 
     /**
      * Cancel an invoice.
@@ -157,14 +176,19 @@ public class InvoiceService {
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new InvoiceNotFoundException(invoiceId));
 
+        logger.info("Attempting to cancel invoice {}", invoiceId);
+
         // Reject an already cancelled invoice.
         if (invoice.getCancelledAt() != null) {
+            logger.warn("Invoice {} already cancelled", invoiceId);
             return false;
         }
 
         invoice.setCancelledAt(LocalDateTime.now());
         invoice.setCancellationReason(cancellationRequest.getCancellationReason());
+
         invoiceRepository.save(invoice);
+        logger.info("Invoice {} successfully cancelled", invoiceId);
 
         return true;
     }

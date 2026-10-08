@@ -63,8 +63,8 @@ public class SupplierControllerTest {
         @Test
         @DisplayName("getSupplier returns 404 when supplier not found")
         void getSupplierWhereSupplierNotFound() throws Exception {
-            final Integer supplierId = 29;
-            final String expectedExceptionMessage = "Supplier not found with id: " + supplierId;
+            final Integer supplierId = 30;
+            final String expectedExceptionMessage = "Supplier not found with ID: " + supplierId;
 
             when(supplierService.getSupplier(supplierId))
                     .thenThrow(new SupplierNotFoundException(supplierId));
@@ -456,8 +456,8 @@ public class SupplierControllerTest {
         @Test
         @DisplayName("deactivateSupplier returns 404 when supplier not found")
         void deactivateSupplierWhereSupplierNotFound() throws Exception {
-            final Integer supplierId = 26;
-            final String expectedExceptionMessage = "Supplier not found with id: " + supplierId;
+            final Integer supplierId = 46;
+            final String expectedExceptionMessage = "Supplier not found with ID: " + supplierId;
 
             when(supplierService.deactivateSupplier(supplierId))
                     .thenThrow(new SupplierNotFoundException(supplierId));
@@ -506,7 +506,7 @@ public class SupplierControllerTest {
         @DisplayName("reactivateSupplier returns 404 when supplier not found")
         void reactivateSupplierWhereSupplierNotFound() throws Exception {
             final Integer supplierId = 26;
-            final String expectedExceptionMessage = "Supplier not found with id: " + supplierId;
+            final String expectedExceptionMessage = "Supplier not found with ID: " + supplierId;
 
             // Do Throw test now method has void return type.
             doThrow(new SupplierNotFoundException(supplierId))

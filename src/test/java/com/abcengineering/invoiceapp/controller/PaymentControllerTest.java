@@ -65,7 +65,7 @@ public class PaymentControllerTest {
         @DisplayName("getPayment throws 404 exception")
         void getPaymentWhereInvoiceNotFound() throws Exception {
 
-            final String expectedExceptionMessage = "Payment not found with id: " + paymentId;
+            final String expectedExceptionMessage = "Payment not found with ID: " + paymentId;
 
             when(paymentService.getPayment(paymentId))
                     .thenThrow(new PaymentNotFoundException(paymentId));
@@ -121,7 +121,7 @@ public class PaymentControllerTest {
         @DisplayName("cancelPayment fails as payment not found")
         void cancelPaymentWherePaymentNotFound() throws Exception {
 
-            final String expectedExceptionMessage = "Payment not found with id: " + paymentId;
+            final String expectedExceptionMessage = "Payment not found with ID: " + paymentId;
 
             Invoice invoice = TestDataFactory.createInvoice(companyName);
             invoice.setId(invoiceId);
@@ -304,7 +304,7 @@ public class PaymentControllerTest {
         @Test
         @DisplayName("createPayment fails as invoice not found")
         void createPaymentWhereInvoiceNotFound() throws Exception {
-            final String expectedExceptionMessage = "Invoice not found with id: " + invoiceId;
+            final String expectedExceptionMessage = "Invoice not found with ID: " + invoiceId;
 
             Invoice invoice = TestDataFactory.createInvoice(companyName);
             invoice.setId(invoiceId);

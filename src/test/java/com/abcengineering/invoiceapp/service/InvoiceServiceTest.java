@@ -227,6 +227,7 @@ public class InvoiceServiceTest {
                     request.getSupplierInvoiceRef(),
                     request.getInvoiceDate(), request.getDueDate(),
                     request.getInvoiceAmount());
+            expectedInvoice.setId(50);
 
             when(supplierRepository.findById(supplierId))
                     .thenReturn(Optional.of(supplier));

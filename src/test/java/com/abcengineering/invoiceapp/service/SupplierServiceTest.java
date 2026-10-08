@@ -135,6 +135,7 @@ public class SupplierServiceTest {
             savedSupplier.setCompanyName(companyName);
             savedSupplier.setCompanyAddress(companyAddress);
             savedSupplier.setActive(true);
+            savedSupplier.setId(100);
 
             // any() means whatever Supplier object save() is
             // called with, return savedSupplier
@@ -193,6 +194,7 @@ public class SupplierServiceTest {
                     companyAddress, contactName, contactEmail,
                     contactPhone);
             savedSupplier.setActive(true);
+            savedSupplier.setId(200);
 
             when(supplierRepository.save(any(Supplier.class)))
                     .thenReturn(savedSupplier);
