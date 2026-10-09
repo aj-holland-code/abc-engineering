@@ -20,6 +20,7 @@ target/
 *.ipr
 
 ### NetBeans ###
+/local-learning/
 /nbproject/private/
 /nbbuild/
 /dist/

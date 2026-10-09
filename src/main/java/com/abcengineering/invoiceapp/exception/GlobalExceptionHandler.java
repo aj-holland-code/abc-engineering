@@ -6,31 +6,55 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.ProblemDetail;
+
+import java.net.URI;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger logger =
             LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String PROBLEM_TITLE = "Not Found";
+    private static final String PROBLEM_TYPE = "about:blank";
 
     @ExceptionHandler(SupplierNotFoundException.class)
-    public ResponseEntity<String> handleSupplierNotFound(SupplierNotFoundException ex) {
+    public ProblemDetail handleSupplierNotFound(SupplierNotFoundException ex) {
         logger.warn("{}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+
+        // Use the static factory method to create a ProblemDetail
+        // for the JSON response.
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND, ex.getMessage());
+
+        problem.setType(URI.create(PROBLEM_TYPE));
+        problem.setTitle(PROBLEM_TITLE);
+
+        return problem;
     }
 
     @ExceptionHandler(InvoiceNotFoundException.class)
-    public ResponseEntity<String> handleInvoiceNotFound(InvoiceNotFoundException ex) {
+    public ProblemDetail handleInvoiceNotFound(InvoiceNotFoundException ex) {
         logger.warn("{}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND, ex.getMessage());
+
+        problem.setType(URI.create(PROBLEM_TYPE));
+        problem.setTitle(PROBLEM_TITLE);
+
+        return problem;
     }
 
     @ExceptionHandler(PaymentNotFoundException.class)
-    public ResponseEntity<String> handlePaymentNotFound(PaymentNotFoundException ex) {
+    public ProblemDetail handlePaymentNotFound(PaymentNotFoundException ex) {
         logger.warn("{}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND, ex.getMessage());
+
+        problem.setType(URI.create(PROBLEM_TYPE));
+        problem.setTitle(PROBLEM_TITLE);
+
+        return problem;
     }
 }

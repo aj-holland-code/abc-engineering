@@ -15,6 +15,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
@@ -67,10 +68,18 @@ public class InvoiceControllerTest {
             when(invoiceService.getInvoice(invoiceId))
                     .thenThrow(new InvoiceNotFoundException(invoiceId));
 
-            mockMvc.perform(get(ID_INVOICE_URI, invoiceId))
+            mockMvc.perform(get(ID_INVOICE_URI, invoiceId)
+                    .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
-                    .andExpect(content().contentType(TestDataFactory.TEXT_CONTENT_TYPE))
-                    .andExpect(content().string(expectedExceptionMessage));
+                    .andExpect(content().contentTypeCompatibleWith(
+                            MediaType.APPLICATION_PROBLEM_JSON))
+                    .andExpect(jsonPath("$.type").value(TestDataFactory.PROBLEM_TYPE))
+                    .andExpect(jsonPath("$.title")
+                            .value(TestDataFactory.PROBLEM_TITLE))
+                    .andExpect(jsonPath("$.status").value(
+                            MockHttpServletResponse.SC_NOT_FOUND))
+                    .andExpect(jsonPath("$.detail").value(expectedExceptionMessage))
+                    .andExpect(jsonPath("$.instance").value(INVOICE_URI + "/" + invoiceId));
         }
 
         @Test
@@ -265,8 +274,15 @@ public class InvoiceControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isNotFound())
-                    .andExpect(content().contentType(TestDataFactory.TEXT_CONTENT_TYPE))
-                    .andExpect(content().string(expectedExceptionMessage));
+                    .andExpect(content().contentTypeCompatibleWith(
+                            MediaType.APPLICATION_PROBLEM_JSON))
+                    .andExpect(jsonPath("$.type").value(TestDataFactory.PROBLEM_TYPE))
+                    .andExpect(jsonPath("$.title")
+                            .value(TestDataFactory.PROBLEM_TITLE))
+                    .andExpect(jsonPath("$.status").value(
+                            MockHttpServletResponse.SC_NOT_FOUND))
+                    .andExpect(jsonPath("$.detail").value(expectedExceptionMessage))
+                    .andExpect(jsonPath("$.instance").value(INVOICE_URI));
         }
     } // end of InvoiceCreationTests
 
@@ -337,8 +353,15 @@ public class InvoiceControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isNotFound())
-                    .andExpect(content().contentType(TestDataFactory.TEXT_CONTENT_TYPE))
-                    .andExpect(content().string(expectedExceptionMessage));
+                    .andExpect(content().contentTypeCompatibleWith(
+                            MediaType.APPLICATION_PROBLEM_JSON))
+                    .andExpect(jsonPath("$.type").value(TestDataFactory.PROBLEM_TYPE))
+                    .andExpect(jsonPath("$.title")
+                            .value(TestDataFactory.PROBLEM_TITLE))
+                    .andExpect(jsonPath("$.status").value(
+                            MockHttpServletResponse.SC_NOT_FOUND))
+                    .andExpect(jsonPath("$.detail").value(expectedExceptionMessage))
+                    .andExpect(jsonPath("$.instance").value(INVOICE_URI + "/" + invoiceId));
         }
 
         @Test
@@ -422,10 +445,17 @@ public class InvoiceControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isNotFound())
-                    .andExpect(content().contentType(TestDataFactory.TEXT_CONTENT_TYPE))
-                    .andExpect(content().string(expectedExceptionMessage));
+                    .andExpect(content().contentTypeCompatibleWith(
+                            MediaType.APPLICATION_PROBLEM_JSON))
+                    .andExpect(jsonPath("$.type").value(TestDataFactory.PROBLEM_TYPE))
+                    .andExpect(jsonPath("$.title")
+                            .value(TestDataFactory.PROBLEM_TITLE))
+                    .andExpect(jsonPath("$.status").value(
+                            MockHttpServletResponse.SC_NOT_FOUND))
+                    .andExpect(jsonPath("$.detail").value(expectedExceptionMessage))
+                    .andExpect(jsonPath("$.instance").value(INVOICE_URI + "/" + invoiceId));
 
-            // Check the service was reached with the correct invoice id.
+
             verify(invoiceService).cancelInvoice(eq(invoiceId), any(CancelInvoiceRequest.class));
         }
 
@@ -470,9 +500,6 @@ public class InvoiceControllerTest {
             ArgumentCaptor<CancelInvoiceRequest> captor =
                     ArgumentCaptor.forClass(CancelInvoiceRequest.class);
 
-            // Confirm cancelInvoice was called (in perform() step, above)
-            // with invoiceId.
-            // Also ensures the CancelInvoiceRequest object it was  passed is captured.
             verify(invoiceService).cancelInvoice(eq(invoiceId), captor.capture());
 
             CancelInvoiceRequest capturedRequest = captor.getValue();

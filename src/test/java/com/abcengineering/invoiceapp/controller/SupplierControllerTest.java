@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
@@ -46,7 +45,6 @@ public class SupplierControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private final String textContentType = "text/plain;charset=UTF-8";
     private final String uri = "/api/suppliers/{id}";
     private final String getURI = "/api/suppliers";
 
@@ -69,20 +67,17 @@ public class SupplierControllerTest {
             when(supplierService.getSupplier(supplierId))
                     .thenThrow(new SupplierNotFoundException(supplierId));
 
-            // Obtain and inspect the response
-            // Debug code to be removed once understanding is clear
-            MvcResult result = mockMvc.perform(get(uri, supplierId))
-                    .andExpect(status().isNotFound())
-                    .andReturn();
-            MockHttpServletResponse response = result.getResponse();
-            System.out.println("\n\nResponse status: " + response.getStatus());
-            System.out.println("Response type: " + response.getContentType());
-            System.out.println("Response string: " + response.getContentAsString());
-
             mockMvc.perform(get(uri, supplierId))
                     .andExpect(status().isNotFound())
-                    .andExpect(content().contentType(textContentType))
-                    .andExpect(content().string(expectedExceptionMessage));
+                    .andExpect(content().contentTypeCompatibleWith(
+                            MediaType.APPLICATION_PROBLEM_JSON))
+                    .andExpect(jsonPath("$.type").value(TestDataFactory.PROBLEM_TYPE))
+                    .andExpect(jsonPath("$.title")
+                            .value(TestDataFactory.PROBLEM_TITLE))
+                    .andExpect(jsonPath("$.status").value(
+                            MockHttpServletResponse.SC_NOT_FOUND))
+                    .andExpect(jsonPath("$.detail").value(expectedExceptionMessage))
+                    .andExpect(jsonPath("$.instance").value(getURI + "/" + supplierId));
         }
 
 
@@ -102,15 +97,6 @@ public class SupplierControllerTest {
             when(supplierService.getSupplier(supplierId))
                     .thenReturn(supplier);
 
-            // Debug code for learning - remove later
-            MvcResult result = mockMvc.perform(get(uri, supplierId)
-            ).andReturn();
-            MockHttpServletResponse response = result.getResponse();
-            System.out.println("\n\nResponse status: " + response.getStatus());
-            System.out.println("Response type: " + response.getContentType());
-            System.out.println("Response string: " + response.getContentAsString());
-
-            // Required validation
             mockMvc.perform(get(uri, supplierId))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -131,8 +117,6 @@ public class SupplierControllerTest {
             when(supplierService.getAllSuppliers())
                     .thenReturn(List.of());
 
-            // $ - root of JSON
-            // jsonPath("$" - return entire JSON response
             mockMvc.perform(get(getURI))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -148,7 +132,6 @@ public class SupplierControllerTest {
             final String companyName2 = "Castle Lane Supplies";
             final String companyName3 = "Burke & Co.";
 
-            // Set up data to return
             Supplier supplier1 = TestDataFactory.createSupplier(companyName);
             supplier1.setId(11);
 
@@ -160,15 +143,9 @@ public class SupplierControllerTest {
 
             List<Supplier> suppliers = List.of(supplier1, supplier2, supplier3);
 
-            // Configure bean to return the data
             when(supplierService.getAllSuppliers())
                     .thenReturn(suppliers);
 
-            // Check:
-            // HTTP response is 200
-            // Content of JSON array is JSON.
-            // Array contains three elements.
-            // The three array elements contain the correct company ids and names.
             mockMvc.perform(get(getURI))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -189,12 +166,11 @@ public class SupplierControllerTest {
 
         @Test
         @DisplayName("createSupplier successfully saves supplier")
-        void testCreateSupplierWhereSupplierCreated() throws Exception {
+        void createSupplierWhereSupplierCreated() throws Exception {
 
             final Integer supplierId = 54;
             final String postURI = "/api/suppliers";
 
-            // Output from createSupplier
             Supplier supplier = TestDataFactory.createSupplier(companyName);
             supplier.setId(supplierId);
             supplier.setCompanyAddress(companyAddress);
@@ -202,19 +178,11 @@ public class SupplierControllerTest {
             supplier.setContactEmail(contactEmail);
             supplier.setContactTelephone(contactTelephone);
 
-
-            // createSupplier should return the above output.
-            // The CreateSupplierRequest object is generated by Spring
-            // when it deserialises the JSON.
-            // Hence, use any() here, so that Mockito won't discriminate on
-            // which instance of the object of that type it gets on this call.
-            // It returns supplier in any case.
+            // Spring deserialises the JSON into a CreateSupplierRequest,
+            // so match the service argument by type rather than object identity.
             when(supplierService.createSupplier(any(CreateSupplierRequest.class)))
                     .thenReturn(supplier);
 
-            // Sends the simulated HTTP request to the HTTP endpoint.
-            // Spring processes the JSON, turning it into the CreateSupplierRequest object.
-            // That object is then the input to SupplierController.createSupplier().
             mockMvc.perform(post(postURI)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("""
@@ -241,20 +209,14 @@ public class SupplierControllerTest {
                     .andExpect(jsonPath("$.contactTelephone").value(contactTelephone))
                     .andExpect(jsonPath("$.active").value(true));
 
-            // Create the Captor for the CreateSupplierRequest object.
-            // This is to allow additional checks to make sure that what
-            // createSupplier receives as input is correct.
+            // Verify that the controller passes the expected fields to the service.
             ArgumentCaptor<CreateSupplierRequest> captor =
                     ArgumentCaptor.forClass(CreateSupplierRequest.class);
 
-            // The Captor allows inspection of the actual CreateSupplierRequest
-            // object that was passed to createSupplier.
             verify(supplierService).createSupplier(captor.capture());
 
-            // Retrieve the CreateSupplierRequest object passed to createService.
             CreateSupplierRequest capturedRequest = captor.getValue();
 
-            // Now check the various fields are populated as expected.
             assertEquals(companyName, capturedRequest.getCompanyName());
             assertEquals(companyAddress, capturedRequest.getCompanyAddress());
             assertEquals(contactName, capturedRequest.getContactName());
@@ -354,8 +316,6 @@ public class SupplierControllerTest {
 
             ArgumentCaptor<UpdateSupplierRequest> captor = ArgumentCaptor.forClass(UpdateSupplierRequest.class);
 
-            // Check updateSupplier called on mock service bean
-            // with the correct supplier Id and the captured UpdateSupplierRequest.
             verify(supplierService).updateSupplier(eq(supplierId),
                     captor.capture());
 
@@ -374,12 +334,13 @@ public class SupplierControllerTest {
         void updateSupplierWhereSupplierNotFound() throws Exception {
 
             final Integer supplierId = 24;
+            final String expectedExceptionMessage = "Supplier not found with ID: " + supplierId;
 
             when(supplierService.updateSupplier(
                     eq(supplierId), any(UpdateSupplierRequest.class)))
                     .thenThrow(new SupplierNotFoundException(supplierId));
 
-            MvcResult result = mockMvc.perform(put(uri, supplierId)
+            mockMvc.perform(put(uri, supplierId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("""
                                     {
@@ -388,13 +349,15 @@ public class SupplierControllerTest {
                                     }
                                     """))
                     .andExpect(status().isNotFound())
-                    .andExpect(content().contentType(textContentType))
-                    .andReturn();
-
-            MockHttpServletResponse response = result.getResponse();
-            System.out.println("\n\nResponse status: " + response.getStatus());
-            System.out.println("Response type: " + response.getContentType());
-            System.out.println("Response string: " + response.getContentAsString());
+                    .andExpect(content().contentTypeCompatibleWith(
+                            MediaType.APPLICATION_PROBLEM_JSON))
+                    .andExpect(jsonPath("$.type").value(TestDataFactory.PROBLEM_TYPE))
+                    .andExpect(jsonPath("$.title")
+                            .value(TestDataFactory.PROBLEM_TITLE))
+                    .andExpect(jsonPath("$.status").value(
+                            MockHttpServletResponse.SC_NOT_FOUND))
+                    .andExpect(jsonPath("$.detail").value(expectedExceptionMessage))
+                    .andExpect(jsonPath("$.instance").value(getURI + "/" + supplierId));
         }
 
 
@@ -464,7 +427,15 @@ public class SupplierControllerTest {
 
             mockMvc.perform(delete(uri, supplierId))
                     .andExpect(status().isNotFound())
-                    .andExpect(content().string(expectedExceptionMessage));
+                    .andExpect(content().contentTypeCompatibleWith(
+                            MediaType.APPLICATION_PROBLEM_JSON))
+                    .andExpect(jsonPath("$.type").value(TestDataFactory.PROBLEM_TYPE))
+                    .andExpect(jsonPath("$.title")
+                            .value(TestDataFactory.PROBLEM_TITLE))
+                    .andExpect(jsonPath("$.status").value(
+                            MockHttpServletResponse.SC_NOT_FOUND))
+                    .andExpect(jsonPath("$.detail").value(expectedExceptionMessage))
+                    .andExpect(jsonPath("$.instance").value(getURI + "/" + supplierId));
 
             verify(supplierService).deactivateSupplier(supplierId);
         }
@@ -514,7 +485,15 @@ public class SupplierControllerTest {
 
             mockMvc.perform(patch(uri, supplierId))
                     .andExpect(status().isNotFound())
-                    .andExpect(content().string(expectedExceptionMessage));
+                    .andExpect(content().contentTypeCompatibleWith(
+                            MediaType.APPLICATION_PROBLEM_JSON))
+                    .andExpect(jsonPath("$.type").value(TestDataFactory.PROBLEM_TYPE))
+                    .andExpect(jsonPath("$.title")
+                            .value(TestDataFactory.PROBLEM_TITLE))
+                    .andExpect(jsonPath("$.status").value(
+                            MockHttpServletResponse.SC_NOT_FOUND))
+                    .andExpect(jsonPath("$.detail").value(expectedExceptionMessage))
+                    .andExpect(jsonPath("$.instance").value(getURI + "/" + supplierId));
 
             verify(supplierService).reactivateSupplier(supplierId);
         }

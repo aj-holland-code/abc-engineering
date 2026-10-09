@@ -13,6 +13,8 @@ public class TestDataFactory {
     private static final String companyAddress = "21 Main Street, Lincoln, LN12 1TY";
 
     public static final String TEXT_CONTENT_TYPE = "text/plain;charset=UTF-8";
+    public static final String PROBLEM_TITLE = "Not Found";
+    public static final String PROBLEM_TYPE = "about:blank";
 
     public static Supplier createSupplier(String companyName) {
 
