@@ -61,26 +61,14 @@ The base package is `com.abcengineering.invoiceapp`.
 
 The application is organised into the following packages:
 
-  -----------------------------------------------------------------------
-  Package                             Responsibility
-  ----------------------------------- -----------------------------------
-  `controller`                        REST API boundary; receives HTTP
-                                      requests and returns responses
-
-  `service`                           Application operations and
-                                      business-rule enforcement
-
-  `repository`                        Persistence access through Spring
-                                      Data JPA
-
-  `model`                             JPA entity classes
-
-  `dto`                               Data transfer objects, including
-                                      request DTOs
-
-  `exception`                         Application-specific exceptions and
-                                      centralised REST exception handling
-  -----------------------------------------------------------------------
+| Package | Responsibility |
+|---|---|
+| `controller` | REST API boundary; receives HTTP requests and returns responses |
+| `service` | Application operations and business-rule enforcement |
+| `repository` | Persistence access through Spring Data JPA |
+| `model` | JPA entity classes |
+| `dto` | Data transfer objects, including request DTOs |
+| `exception` | Application-specific exceptions and centralised REST exception handling |
 
 Dependencies are injected through constructors.
 

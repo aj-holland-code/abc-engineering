@@ -28,8 +28,8 @@ Further improvements are being considered and prioritised as part of the ongoing
 
 ## Key Functionality
 
-- **Supplier Management:** Create, view, update, deactivate and reactivate supplier records.
-- **Invoice Management:** Create, view, update and cancel invoices associated with suppliers.
+- **Supplier Management:** Create, view, update, deactivate, and reactivate supplier records.
+- **Invoice Management:** Create, view, update, and cancel invoices associated with suppliers.
 - **Payment Management:** Record payments against invoices and cancel payments when necessary.
 
 The application enforces business rules governing supplier deactivation, invoice cancellation, and payment handling to maintain data consistency.
@@ -50,7 +50,7 @@ Further details are available in the [Design Document](docs/ABC_Engineering_Serv
 ## Testing
 
 - **Unit Testing:** Automated unit tests using JUnit and Mockito.
-- **End-to-End Testing:** Manual testing of REST API endpoints using Postman, a REST API testing tool, against a running application and PostgreSQL database.
+- **End-to-End Testing:** Manual testing of REST API endpoints using Postman, a REST API testing tool, against a running application connected to a PostgreSQL database.
 
 Testing covers successful operations, business rule enforcement, and error handling across supplier, invoice, and payment functionality.
 
@@ -81,7 +81,7 @@ From the project root directory, run:
 .\mvnw.cmd spring-boot:run
 ```
 
-Press `Ctrl+C` in the terminal to stop the application.
+Press `Ctrl + C` in the terminal to stop the application.
 
 ## Further Development
 
