@@ -1,10 +1,10 @@
-# ABC Engineering Services
+# ABC Engineering Services Invoice Application
 
 ## Project Overview
 
-ABC Engineering Services is a Java Spring Boot application developed to manage supplier, invoice and payment information for a fictional engineering services company.
+A Java Spring Boot application developed to manage supplier, invoice, and payment information for a fictional engineering services company.
 
-The application provides a REST API for managing supplier records, recording invoices and handling payments. It implements business rules governing supplier deactivation, invoice cancellation and payment handling to maintain consistent business data.
+The application provides a REST API for managing supplier records, recording invoices, and handling payments. It implements business rules governing supplier deactivation, invoice cancellation and payment handling to maintain consistent business data.
 
 The project demonstrates the design and development of a layered backend application, incorporating REST API development, relational database persistence, and automated testing.
 
